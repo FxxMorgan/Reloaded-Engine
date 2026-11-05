@@ -31,6 +31,11 @@ jobs:
           distribution: temurin
           java-version: "21"
           cache: gradle
+      - name: Configure Android SDK command-line tools
+        uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3
+        with:
+          cmdline-tools-version: "12266719"
+          log-accepted-android-sdk-licenses: "false"
       - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: |
@@ -114,6 +119,11 @@ jobs:
           distribution: temurin
           java-version: "21"
           cache: gradle
+      - name: Configure Android SDK command-line tools
+        uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3
+        with:
+          cmdline-tools-version: "12266719"
+          log-accepted-android-sdk-licenses: "false"
       - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: |

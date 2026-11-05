@@ -1,0 +1,74 @@
+name: Error o cierre inesperado
+description: Informa un bloqueo, un problema visual o un comportamiento incorrecto.
+title: "[Error] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por probar la alpha. Indica la escena exacta y cómo repetir el problema. Adjunta capturas o logs si los tienes; no adjuntes el juego ni tus partidas.
+  - type: input
+    id: app_version
+    attributes:
+      label: Versión de Reloaded Engine
+      placeholder: alpha-0.1, instalada desde GitHub Releases
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Marca y modelo del dispositivo
+      placeholder: Motorola edge 40
+    validations:
+      required: true
+  - type: input
+    id: android
+    attributes:
+      label: Versión de Android
+      placeholder: Android 14
+    validations:
+      required: true
+  - type: input
+    id: chipset
+    attributes:
+      label: Procesador y GPU, si los conoces
+      placeholder: Dimensity 8020 / Mali-G77
+  - type: input
+    id: game_version
+    attributes:
+      label: Juego y versión
+      placeholder: Pokémon Reloaded 1.9.2.2
+    validations:
+      required: true
+  - type: dropdown
+    id: speed
+    attributes:
+      label: Velocidad utilizada
+      options: ["1×", "2×"]
+    validations:
+      required: true
+  - type: dropdown
+    id: input_method
+    attributes:
+      label: Método de control
+      options: [Pantalla táctil, Gamepad Bluetooth, Gamepad USB, Teclado físico]
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Pasos para reproducirlo
+      placeholder: "1. Cargar partida…\n2. Entrar a…\n3. Pulsar…"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Qué esperabas y qué ocurrió
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Capturas, vídeo o logs
+      description: Puedes arrastrar archivos aquí. Para logs por ADB, consulta CONTRIBUTING.md.

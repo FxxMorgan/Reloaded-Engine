@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="240" viewBox="0 0 1000 240" role="img" aria-labelledby="title description">
+  <title id="title">Reloaded Engine</title>
+  <desc id="description">Un launcher para juegos de GameMaker. Primera alpha para Android.</desc>
+  <rect width="1000" height="240" fill="#F8FAFC"/>
+  <path d="M0 239.5H1000" stroke="#E2E8F0"/>
+  <rect x="56" y="62" width="112" height="112" rx="24" fill="#4268A8"/>
+  <path d="M88 88H111C124 88 132 95 132 106C132 114 128 119 121 122L134 148H119L105 121H101V148H88ZM101 100V110H110C116 110 119 109 119 105C119 102 116 100 110 100Z" fill="#FFF"/>
+  <path d="M88 81H132" stroke="#A9C4EF" stroke-width="3"/>
+  <text x="204" y="106" font-family="Arial,Helvetica,sans-serif" font-size="44" font-weight="700" fill="#0F172A">Reloaded Engine</text>
+  <text x="206" y="144" font-family="Arial,Helvetica,sans-serif" font-size="22" fill="#64748B">Tu biblioteca de GameMaker, en Android.</text>
+  <text x="206" y="176" font-family="Arial,Helvetica,sans-serif" font-size="15" letter-spacing="2" fill="#4268A8">ALPHA-0.1</text>
+</svg>

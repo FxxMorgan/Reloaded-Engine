@@ -1,0 +1,6 @@
+# scripts/build-native.sh adds the selected NDK toolchain to PATH.
+[target.aarch64-linux-android]
+linker = "aarch64-linux-android26-clang"
+
+[target.x86_64-linux-android]
+linker = "x86_64-linux-android26-clang"

@@ -1,0 +1,18 @@
+[package]
+name = "reloaded-jni"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+reloaded-core = { path = "../reloaded-core" }
+jni = "0.21"
+log = "0.4"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+gm8exe = { path = "../vendor/OpenGMK/gm8exe" }
+gm8emulator = { path = "../vendor/OpenGMK/gm8emulator" }
+encoding_rs = "0.8"

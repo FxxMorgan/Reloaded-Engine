@@ -1,0 +1,79 @@
+name: Experiencia en otro dispositivo
+description: Cuéntanos cómo funciona, también cuando todo sale bien.
+title: "[Dispositivo] "
+labels: [compatibility]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Estos reportes nos ayudan a ampliar la compatibilidad. Usa 1× para la prueba principal e indica por separado si probaste 2×. No hace falta completar el juego.
+  - type: input
+    id: device
+    attributes:
+      label: Marca y modelo
+    validations:
+      required: true
+  - type: input
+    id: android
+    attributes:
+      label: Versión de Android
+    validations:
+      required: true
+  - type: input
+    id: hardware
+    attributes:
+      label: Procesador, GPU y RAM, si los conoces
+  - type: input
+    id: versions
+    attributes:
+      label: Versión del launcher y del juego
+      placeholder: Reloaded Engine alpha-0.1 / Pokémon Reloaded 1.9.2.2
+    validations:
+      required: true
+  - type: dropdown
+    id: overall
+    attributes:
+      label: Resultado general
+      options:
+        - Funciona durante lo que probé
+        - Funciona con problemas
+        - No permite jugar
+        - No instala o no abre
+    validations:
+      required: true
+  - type: checkboxes
+    id: completed
+    attributes:
+      label: Qué pudiste comprobar
+      options:
+        - label: Instalar el APK y abrir el launcher
+        - label: Importar el ZIP completo
+        - label: Iniciar o cargar una partida
+        - label: Ver los sprites de los Pokémon
+        - label: Completar un combate
+        - label: Guardar y volver a cargar
+        - label: Exportar una copia ZIP de las partidas
+        - label: Salir a segundo plano y volver al juego
+        - label: Jugar con gamepad
+  - type: input
+    id: duration
+    attributes:
+      label: Duración aproximada de la sesión
+      placeholder: 25 minutos
+  - type: textarea
+    id: performance
+    attributes:
+      label: Rendimiento y escenas probadas
+      description: Indica si fue a 1× o 2×, la escena y los FPS o pasos/s del diagnóstico si los consultaste.
+    validations:
+      required: true
+  - type: input
+    id: controller
+    attributes:
+      label: Gamepad y conexión, si lo usaste
+      placeholder: Modelo del mando / Bluetooth o USB
+  - type: textarea
+    id: notes
+    attributes:
+      label: Observaciones y capturas
+      description: Incluye problemas de audio, temperatura, botones, gráficos o estabilidad.

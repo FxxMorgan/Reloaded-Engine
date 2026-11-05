@@ -1,0 +1,37 @@
+# Machine-specific configuration and build products
+/.gradle/
+/.kotlin/
+/local.properties
+/build/
+/app/build/
+/native/build/
+/native/target/
+/app/src/main/jniLibs/
+
+# Signing material
+*.jks
+*.keystore
+/keystore.properties
+
+# Local game packages and player data
+/*.exe
+/*.zip
+/game_extracted/
+/reloaded_data/
+/save_backups/
+*.sav
+*.savc
+*.nfo
+
+# Local credentials and editor state
+/.signing/
+/.secrets/
+.env
+.env.*
+*.p12
+*.pem
+/native/.cargo/credentials*
+.idea/
+.vscode/
+*.log
+__pycache__/

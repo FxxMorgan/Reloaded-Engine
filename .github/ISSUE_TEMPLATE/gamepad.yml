@@ -1,0 +1,53 @@
+name: Compatibilidad de gamepad
+description: Reporta un mando que funciona o un problema de botones y ejes.
+title: "[Gamepad] "
+labels: [gamepad, compatibility]
+body:
+  - type: input
+    id: controller
+    attributes:
+      label: Marca y modelo del gamepad
+    validations:
+      required: true
+  - type: dropdown
+    id: connection
+    attributes:
+      label: Conexión
+      options: [Bluetooth, USB, Receptor USB]
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Dispositivo y versión de Android
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Versión del launcher y del juego
+      placeholder: alpha-0.1 / Pokémon Reloaded 1.9.2.2
+    validations:
+      required: true
+  - type: dropdown
+    id: result
+    attributes:
+      label: Resultado
+      options:
+        - Funciona correctamente durante la prueba
+        - Lo detecta, pero algunos controles fallan
+        - No lo detecta
+    validations:
+      required: true
+  - type: textarea
+    id: mapping
+    attributes:
+      label: Botones y ejes comprobados
+      description: Indica cruceta, stick izquierdo, A/B/X/Y, L1/R1, L2/R2, Start y Select. Si alguno falla, explica qué hace y qué esperabas.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Detalles adicionales, vídeo o logs
+      description: Indica también si los controles táctiles se ocultan y reaparecen al conectar o desconectar el mando.

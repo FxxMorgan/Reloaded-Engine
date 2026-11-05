@@ -1,0 +1,22 @@
+name: Propuesta de mejora
+description: Sugiere una mejora del launcher, la interfaz o la compatibilidad.
+title: "[Propuesta] "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: Qué necesitas resolver
+      description: Describe una situación concreta de uso.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Cómo te gustaría que funcionara
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Ejemplos o contexto adicional

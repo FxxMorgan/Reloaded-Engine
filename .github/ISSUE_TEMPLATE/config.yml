@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Descargar la alpha y consultar sus límites
+    url: https://github.com/FxxMorgan/Reloaded-Engine/releases
+    about: Instala el APK ARM64 de una release y consulta sus notas antes de reportar.
+  - name: Controles, requisitos y primeros pasos
+    url: https://github.com/FxxMorgan/Reloaded-Engine#readme
+    about: Documentación del launcher y asignación de botones del gamepad.

@@ -1,0 +1,18 @@
+TimGM6mb SoundFont
+Copyright (C) 2004 Tim Brechbill
+Copyright (C) 2010 David Bolton
+License: GNU General Public License, version 2 (GPL-2.0-only).
+
+This SoundFont is free software, distributed without warranty under GPL version 2.
+The full license is included in GPL-2.0.txt.
+
+The file soundfont.sf2 is byte-for-byte identical to mscore/share/sound/TimGM6mb.sf2
+in MuseScore commit 90c33ef9d87b3f5ff92efd3b07d89eb455fb1fef.
+Git blob: e5f72e60926a3b62264cb5ad79304f7e204ccac7
+
+Original source:
+https://github.com/musescore/musescore-old/blob/90c33ef9d87b3f5ff92efd3b07d89eb455fb1fef/mscore/share/sound/TimGM6mb.sf2
+Copyright reference:
+https://metadata.ftp-master.debian.org/changelogs/main/t/timgm6mb-soundfont/timgm6mb-soundfont_1.3-5_copyright
+
+The alpha packages this file, but connecting it to Android MIDI playback remains pending.

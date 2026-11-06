@@ -7,6 +7,7 @@
   <a href="#primeros-pasos">Primeros pasos</a> ·
   <a href="#compatibilidad">Compatibilidad</a> ·
   <a href="#compilar">Compilar</a> ·
+  <a href="ROADMAP.md">Roadmap</a> ·
   <a href="#agradecimientos">Agradecimientos</a>
 </p>
 
@@ -151,14 +152,13 @@ docs/                       Notas de la alpha y recursos de documentación
 La ejecución del juego utiliza el runtime de OpenGMK.
 Las utilidades y pruebas auxiliares de `reloaded-core` no equivalen por sí solas a compatibilidad completa con GameMaker.
 
-## Próximos pasos
+## Roadmap
 
-1. Validar instalación limpia, ciclos de pausa y reanudación, sesiones largas y más dispositivos ARM64.
-2. Ampliar los reportes de rendimiento y compatibilidad de gamepads a partir de las pruebas públicas.
-3. Añadir restauración de partidas y configuración de audio MIDI.
-4. Separar instalaciones y perfiles para incorporar más juegos a la biblioteca.
+El [roadmap](ROADMAP.md) prioriza el progreso y las sesiones seguras, los controles completos, el audio/rendimiento y, después, la biblioteca de varios juegos. Incluye criterios para comprobar cada fase y distingue los cambios en desarrollo del APK publicado.
 
-El alcance y las comprobaciones de esta entrega se describen en [las notas de alpha-0.1](docs/alpha-0.1.md).
+La [revisión de issues de Klisee](docs/triage-klisee.md) contrasta 63 reportes abiertos con nuestra implementación. El primer parche preparado corrige la limpieza de teclas retenidas; su comprobación con mando físico y su inclusión en otro APK siguen pendientes.
+
+El alcance de la versión publicada está descrito en [las notas de alpha-0.1](docs/alpha-0.1.md).
 
 ## Participar y comparar
 

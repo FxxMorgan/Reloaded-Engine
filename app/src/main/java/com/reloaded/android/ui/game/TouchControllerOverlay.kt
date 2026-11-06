@@ -325,76 +325,84 @@ private fun FollowFingerJoystick(
             .then(
                 if (!isLayoutEditing) {
                     Modifier.pointerInput(isDynamic, scale) {
-                        awaitPointerEventScope {
-                            while (true) {
-                                val event = awaitPointerEvent(PointerEventPass.Main)
-                                val change = event.changes.firstOrNull() ?: continue
+                        try {
+                            awaitPointerEventScope {
+                                while (true) {
+                                    val event = awaitPointerEvent(PointerEventPass.Main)
+                                    val change = event.changes.firstOrNull() ?: continue
 
-                                if (change.pressed) {
-                                    change.consume()
-                                    if (!isTouching) {
-                                        isTouching = true
-                                        onHaptic()
-                                        if (isDynamic) {
-                                            baseCenterX = change.position.x.coerceIn(baseRadiusPx, areaWidthPx - baseRadiusPx)
-                                            baseCenterY = change.position.y.coerceIn(baseRadiusPx, areaHeightPx - baseRadiusPx)
+                                    if (change.pressed) {
+                                        change.consume()
+                                        if (!isTouching) {
+                                            isTouching = true
+                                            onHaptic()
+                                            if (isDynamic) {
+                                                baseCenterX = change.position.x.coerceIn(baseRadiusPx, areaWidthPx - baseRadiusPx)
+                                                baseCenterY = change.position.y.coerceIn(baseRadiusPx, areaHeightPx - baseRadiusPx)
+                                                thumbOffsetX = 0f
+                                                thumbOffsetY = 0f
+                                            }
+                                        }
+
+                                        val targetBaseX = if (isDynamic) baseCenterX else defaultCenterX
+                                        val targetBaseY = if (isDynamic) baseCenterY else defaultCenterY
+
+                                        val dx = change.position.x - targetBaseX
+                                        val dy = change.position.y - targetBaseY
+                                        val dist = sqrt(dx * dx + dy * dy)
+
+                                        if (isDynamic && dist > maxPullPx) {
+                                            // Follow-finger leash effect: pull the base center along with the finger
+                                            val excess = dist - maxPullPx
+                                            val newBaseX = (baseCenterX + (dx / dist) * excess)
+                                                .coerceIn(baseRadiusPx, areaWidthPx - baseRadiusPx)
+                                            val newBaseY = (baseCenterY + (dy / dist) * excess)
+                                                .coerceIn(baseRadiusPx, areaHeightPx - baseRadiusPx)
+                                            baseCenterX = newBaseX
+                                            baseCenterY = newBaseY
+
+                                            thumbOffsetX = (change.position.x - newBaseX).coerceIn(-maxPullPx, maxPullPx)
+                                            thumbOffsetY = (change.position.y - newBaseY).coerceIn(-maxPullPx, maxPullPx)
+                                        } else if (!isDynamic && dist > maxPullPx) {
+                                            thumbOffsetX = (dx / dist) * maxPullPx
+                                            thumbOffsetY = (dy / dist) * maxPullPx
+                                        } else {
+                                            thumbOffsetX = dx
+                                            thumbOffsetY = dy
+                                        }
+
+                                        val currentDist = sqrt(thumbOffsetX * thumbOffsetX + thumbOffsetY * thumbOffsetY)
+                                        if (currentDist > deadZonePx) {
+                                            val angle = atan2(thumbOffsetY.toDouble(), thumbOffsetX.toDouble()) * (180.0 / Math.PI)
+                                            // 8 directions mapping
+                                            val right = angle in -67.5..67.5
+                                            val left = angle > 112.5 || angle < -112.5
+                                            val down = angle in 22.5..157.5
+                                            val up = angle in -157.5..-22.5
+                                            onDirectionChange(up, down, left, right)
+                                        } else {
+                                            onDirectionChange(false, false, false, false)
+                                        }
+                                    } else {
+                                        if (isTouching) {
+                                            isTouching = false
                                             thumbOffsetX = 0f
                                             thumbOffsetY = 0f
+                                            if (isDynamic) {
+                                                baseCenterX = defaultCenterX
+                                                baseCenterY = defaultCenterY
+                                            }
+                                            onDirectionChange(false, false, false, false)
                                         }
-                                    }
-
-                                    val targetBaseX = if (isDynamic) baseCenterX else defaultCenterX
-                                    val targetBaseY = if (isDynamic) baseCenterY else defaultCenterY
-
-                                    val dx = change.position.x - targetBaseX
-                                    val dy = change.position.y - targetBaseY
-                                    val dist = sqrt(dx * dx + dy * dy)
-
-                                    if (isDynamic && dist > maxPullPx) {
-                                        // Follow-finger leash effect: pull the base center along with the finger
-                                        val excess = dist - maxPullPx
-                                        val newBaseX = (baseCenterX + (dx / dist) * excess)
-                                            .coerceIn(baseRadiusPx, areaWidthPx - baseRadiusPx)
-                                        val newBaseY = (baseCenterY + (dy / dist) * excess)
-                                            .coerceIn(baseRadiusPx, areaHeightPx - baseRadiusPx)
-                                        baseCenterX = newBaseX
-                                        baseCenterY = newBaseY
-
-                                        thumbOffsetX = (change.position.x - newBaseX).coerceIn(-maxPullPx, maxPullPx)
-                                        thumbOffsetY = (change.position.y - newBaseY).coerceIn(-maxPullPx, maxPullPx)
-                                    } else if (!isDynamic && dist > maxPullPx) {
-                                        thumbOffsetX = (dx / dist) * maxPullPx
-                                        thumbOffsetY = (dy / dist) * maxPullPx
-                                    } else {
-                                        thumbOffsetX = dx
-                                        thumbOffsetY = dy
-                                    }
-
-                                    val currentDist = sqrt(thumbOffsetX * thumbOffsetX + thumbOffsetY * thumbOffsetY)
-                                    if (currentDist > deadZonePx) {
-                                        val angle = atan2(thumbOffsetY.toDouble(), thumbOffsetX.toDouble()) * (180.0 / Math.PI)
-                                        // 8 directions mapping
-                                        val right = angle in -67.5..67.5
-                                        val left = angle > 112.5 || angle < -112.5
-                                        val down = angle in 22.5..157.5
-                                        val up = angle in -157.5..-22.5
-                                        onDirectionChange(up, down, left, right)
-                                    } else {
-                                        onDirectionChange(false, false, false, false)
-                                    }
-                                } else {
-                                    if (isTouching) {
-                                        isTouching = false
-                                        thumbOffsetX = 0f
-                                        thumbOffsetY = 0f
-                                        if (isDynamic) {
-                                            baseCenterX = defaultCenterX
-                                            baseCenterY = defaultCenterY
-                                        }
-                                        onDirectionChange(false, false, false, false)
                                     }
                                 }
                             }
+                        } finally {
+                            isTouching = false
+                            thumbOffsetX = 0f
+                            thumbOffsetY = 0f
+                            onDirectionChange(false, false, false, false)
+                            GamepadMapper.reset()
                         }
                     }
                 } else Modifier

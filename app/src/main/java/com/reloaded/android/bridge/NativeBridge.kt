@@ -70,6 +70,7 @@ object NativeBridge {
     external fun nativePullAudioSamples(outBuffer: FloatArray): Int
     external fun nativeUpdateInputMask(mask: Int)
     external fun nativeSetButtonState(buttonBit: Int, pressed: Boolean)
+    external fun nativeResetInputs()
     external fun nativeSetSpeedMultiplier(multiplier: Int)
     external fun nativePause()
     external fun nativeResume()
@@ -182,6 +183,16 @@ object NativeBridge {
     fun setSpeedMultiplierSafe(multiplier: Int) {
         if (isNativeLoaded) {
             try { nativeSetSpeedMultiplier(multiplier) } catch (e: Throwable) { Log.e(TAG, "setSpeedMultiplier error", e) }
+        }
+    }
+
+    fun resetInputsSafe() {
+        activeInputMask.set(0)
+        if (isNativeLoaded) {
+            try { nativeResetInputs() } catch (e: Throwable) {
+                Log.e(TAG, "resetInputs error", e)
+                updateInputMaskSafe(0)
+            }
         }
     }
 

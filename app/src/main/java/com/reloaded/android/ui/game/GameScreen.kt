@@ -250,6 +250,7 @@ fun GameScreen(
                     }
                 }
             }
+            if (hasPhysicalController != found) GamepadMapper.reset()
             hasPhysicalController = found
         }
 
@@ -257,8 +258,14 @@ fun GameScreen(
 
         val deviceListener = object : InputManager.InputDeviceListener {
             override fun onInputDeviceAdded(deviceId: Int) { checkControllers() }
-            override fun onInputDeviceRemoved(deviceId: Int) { checkControllers() }
-            override fun onInputDeviceChanged(deviceId: Int) { checkControllers() }
+            override fun onInputDeviceRemoved(deviceId: Int) {
+                GamepadMapper.reset()
+                checkControllers()
+            }
+            override fun onInputDeviceChanged(deviceId: Int) {
+                GamepadMapper.reset()
+                checkControllers()
+            }
         }
 
         inputManager?.registerInputDeviceListener(deviceListener, null)
@@ -266,6 +273,7 @@ fun GameScreen(
         onDispose {
             isRunning = false
             isSurfaceReady = false
+            GamepadMapper.reset()
             audioPlayer.stop()
             NativeBridge.onSurfaceDestroyedSafe()
             renderDispatcher.close()
@@ -310,6 +318,7 @@ fun GameScreen(
 
                         override fun surfaceDestroyed(holder: SurfaceHolder) {
                             isSurfaceReady = false
+                            GamepadMapper.reset()
                             NativeBridge.onSurfaceDestroyedSafe()
                         }
                     })
@@ -426,6 +435,7 @@ fun GameScreen(
 
                         IconButton(
                             onClick = {
+                                GamepadMapper.reset()
                                 isPaused = true
                                 NativeBridge.pauseSafe()
                                 audioPlayer.pause()

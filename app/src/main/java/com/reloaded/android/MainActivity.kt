@@ -94,6 +94,16 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onPause() {
+        if (currentScreen == Screen.Game) GamepadMapper.reset()
+        super.onPause()
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (!hasFocus && currentScreen == Screen.Game) GamepadMapper.reset()
+    }
+
     private fun setImmersiveGameMode() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
         val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)

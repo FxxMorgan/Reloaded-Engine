@@ -1,5 +1,5 @@
 use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicI32, AtomicU32, AtomicU64, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicI32, AtomicU32, AtomicU64, Ordering};
 use std::sync::{Mutex, OnceLock};
 
 use reloaded_core::input::*;
@@ -123,8 +123,11 @@ pub struct BridgeState {
     /// Bitwise OR'd on press so taps shorter than 1 frame time (20-50ms) are NEVER lost!
     pub input_pressed_latch: AtomicU32,
 
-    /// Previous effective input mask for transition detection across both frames and inner modal poll loops.
+    /// Last effective mask delivered to GameMaker; only the render thread advances it.
     pub prev_input_mask: AtomicU32,
+
+    /// The render thread must release old keys before applying any fresh presses.
+    input_reset_pending: AtomicBool,
 
     /// Surface and Activity lifecycle state machine.
     pub lifecycle: Mutex<SurfaceLifecycle>,
@@ -170,6 +173,7 @@ impl BridgeState {
             input_mask: AtomicU32::new(0),
             input_pressed_latch: AtomicU32::new(0),
             prev_input_mask: AtomicU32::new(0),
+            input_reset_pending: AtomicBool::new(false),
             lifecycle: Mutex::new(SurfaceLifecycle::new()),
             runtime: Mutex::new(None),
             gm8_game: Mutex::new(None),
@@ -211,11 +215,25 @@ impl BridgeState {
         self.input_mask.load(Ordering::Relaxed)
     }
 
-    /// Resets all inputs (clears `input_mask`, `input_pressed_latch`, and `prev_input_mask`).
+    /// Cancels held inputs and pending taps. The render thread retains its previous
+    /// mask so the next frame delivers key-up transitions to GameMaker.
     pub fn reset_inputs(&self) {
         self.input_mask.store(0, Ordering::Relaxed);
         self.input_pressed_latch.store(0, Ordering::Relaxed);
-        self.prev_input_mask.store(0, Ordering::Relaxed);
+        self.input_reset_pending.store(true, Ordering::Release);
+    }
+
+    /// Render-thread input delivery, including releases queued while the game was paused.
+    pub fn sync_game_input_frame(&self, input: &mut gm8emulator::input::Input) -> u32 {
+        let reset = self.input_reset_pending.swap(false, Ordering::Acquire);
+        let effective = self.input_mask.load(Ordering::Relaxed)
+            | self.input_pressed_latch.swap(0, Ordering::Relaxed);
+        let previous = self.prev_input_mask.swap(effective, Ordering::Relaxed);
+        if reset {
+            sync_mask_to_gm8_input(input, 0, previous);
+        }
+        sync_mask_to_gm8_input(input, effective, if reset { 0 } else { previous });
+        effective
     }
 
     /// Initializes the engine runtime with the specified storage directory.
@@ -381,11 +399,6 @@ impl BridgeState {
             return 0;
         }
 
-        // 2. Synchronize lock-free AtomicU32 input mask + latched short taps
-        let current_mask = self.input_mask.load(Ordering::Relaxed);
-        let latched_mask = self.input_pressed_latch.swap(0, Ordering::Relaxed);
-        let effective_mask = current_mask | latched_mask;
-
         #[cfg(target_os = "android")]
         {
             // Extract executable path without holding runtime lock across rendering
@@ -420,6 +433,7 @@ impl BridgeState {
                         match launch_gm8_game(exe_path) {
                             Ok(game) => {
                                 crate::egl_renderer::alog("OpenGMK: GM8 game launched and initialized successfully!");
+                                self.prev_input_mask.store(0, Ordering::Relaxed);
                                 *gm8_guard = Some(ActiveGm8Game {
                                     game,
                                     exe_path: exe_path.clone(),
@@ -436,8 +450,7 @@ impl BridgeState {
                     }
 
                     if let Some(active) = gm8_guard.as_mut() {
-                        let prev_mask = self.prev_input_mask.swap(effective_mask, Ordering::Relaxed);
-                        sync_mask_to_gm8_input(&mut active.game.input, effective_mask, prev_mask);
+                        let effective_mask = self.sync_game_input_frame(&mut active.game.input);
                         active.prev_input_mask = effective_mask;
 
                         // Execute exactly 1 frame step per call; Android frame pacing (ReloadedGameThread)
@@ -471,6 +484,8 @@ impl BridgeState {
         }
 
         // Fallback: synthetic engine renderer path
+        let effective_mask = self.input_mask.load(Ordering::Relaxed)
+            | self.input_pressed_latch.swap(0, Ordering::Relaxed);
         let mut rt_guard = match self.runtime.lock() {
             Ok(guard) => guard,
             Err(poisoned) => poisoned.into_inner(),
@@ -1071,6 +1086,62 @@ mod tests {
         assert!(!input.keyboard_check(0x58));
         assert!(input.keyboard_check_released(0x26));
         assert!(input.keyboard_check_released(0x58));
+    }
+
+    #[test]
+    fn reset_inputs_releases_keys_already_held_inside_game_maker() {
+        let bridge = BridgeState::new();
+        let mut input = gm8emulator::input::Input::new();
+        bridge.update_input_mask(BTN_UP | BTN_Z);
+        bridge.sync_game_input_frame(&mut input);
+        assert!(input.keyboard_check(0x26));
+        assert!(input.keyboard_check(0x5A));
+        input.step();
+
+        // Losing focus or disconnecting a controller may never deliver key-up events.
+        // Repeated lifecycle callbacks must still preserve the pending release.
+        bridge.reset_inputs();
+        bridge.reset_inputs();
+        bridge.sync_game_input_frame(&mut input);
+        assert!(!input.keyboard_check(0x26), "direction stayed held after reset");
+        assert!(!input.keyboard_check(0x5A), "attack stayed held after reset");
+        assert!(input.keyboard_check_released(0x26));
+        assert!(input.keyboard_check_released(0x5A));
+        input.step();
+
+        // The same controls must work again after reconnecting/resuming.
+        bridge.update_input_mask(BTN_UP | BTN_Z);
+        bridge.sync_game_input_frame(&mut input);
+        assert!(input.keyboard_check_pressed(0x26));
+        assert!(input.keyboard_check_pressed(0x5A));
+    }
+
+    #[test]
+    fn reset_inputs_allows_a_fresh_press_before_the_next_rendered_frame() {
+        let bridge = BridgeState::new();
+        let mut input = gm8emulator::input::Input::new();
+        bridge.set_button_state(BTN_Z, true);
+        bridge.sync_game_input_frame(&mut input);
+        input.step();
+
+        bridge.reset_inputs();
+        // A new key-down can arrive after focus returns, before rendering resumes.
+        bridge.set_button_state(BTN_Z, true);
+        bridge.sync_game_input_frame(&mut input);
+        assert!(input.keyboard_check(0x5A));
+        assert!(input.keyboard_check_pressed(0x5A), "fresh attack was lost across reset");
+    }
+
+    #[test]
+    fn reset_inputs_discards_a_tap_queued_before_focus_was_lost() {
+        let bridge = BridgeState::new();
+        let mut input = gm8emulator::input::Input::new();
+        bridge.set_button_state(BTN_Z, true);
+        bridge.set_button_state(BTN_Z, false);
+        bridge.reset_inputs();
+        bridge.sync_game_input_frame(&mut input);
+        assert!(!input.keyboard_check(0x5A));
+        assert!(!input.keyboard_check_pressed(0x5A), "cancelled tap leaked into a new frame");
     }
 
     #[test]

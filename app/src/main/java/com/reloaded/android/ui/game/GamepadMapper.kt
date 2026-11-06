@@ -19,6 +19,15 @@ object GamepadMapper {
     private var axisUpPressed = false
     private var axisDownPressed = false
 
+    /** Lost focus/disconnection may not deliver releases; forget cached axis states too. */
+    fun reset() {
+        axisLeftPressed = false
+        axisRightPressed = false
+        axisUpPressed = false
+        axisDownPressed = false
+        NativeBridge.resetInputsSafe()
+    }
+
     /**
      * Handles hardware controller key events (D-pad and buttons).
      * Returns true if event was consumed.

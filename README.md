@@ -154,7 +154,9 @@ Las utilidades y pruebas auxiliares de `reloaded-core` no equivalen por sí sola
 
 ## Roadmap
 
-El [roadmap](ROADMAP.md) prioriza el progreso y las sesiones seguras, los controles completos, el audio/rendimiento y, después, la biblioteca de varios juegos. Incluye criterios para comprobar cada fase y distingue los cambios en desarrollo del APK publicado.
+El [roadmap](ROADMAP.md) pone primero las partidas **PC ↔ Android** en la misma versión del juego. Después aborda pantalla completa opcional, controles que cambian por contexto con diseños e iconos personalizables, dibujo más fluido sin acelerar la lógica y la biblioteca de varios juegos. Incluye criterios para comprobar cada fase y distingue los cambios en desarrollo del APK publicado.
+
+Los [requisitos de experiencia y compatibilidad](docs/experiencia-y-compatibilidad.md) describen la prueba PC → Android → PC y las mejoras de pantalla, controles y FPS usando la implementación de Klisee como referencia.
 
 La [revisión de issues de Klisee](docs/triage-klisee.md) contrasta 63 reportes abiertos con nuestra implementación. El primer parche preparado corrige la limpieza de teclas retenidas; su comprobación con mando físico y su inclusión en otro APK siguen pendientes.
 

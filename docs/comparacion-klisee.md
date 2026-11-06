@@ -22,3 +22,9 @@ La aportación comprobable es una integración y una interfaz orientadas al laun
 Esto no demuestra mayor rendimiento, estabilidad o compatibilidad que Klisee: haría falta ejecutar la misma versión del juego, la misma escena y los mismos dispositivos en ambas aplicaciones. Sus funciones más avanzadas de partidas, renderizado y arquitecturas tampoco se anuncian como disponibles aquí.
 
 La procedencia de los parches compartidos está detallada en [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md). No se presentan como invenciones exclusivas los arreglos derivados de su trabajo.
+
+## Dirección del siguiente trabajo
+
+La experiencia de Klisee se utilizará como guía para la transferencia de partidas, los perfiles contextuales, la apariencia de los controles, el escalado y la separación entre dibujo y simulación. El objetivo es alcanzar esos flujos con pruebas y después mejorar los puntos donde los reportes muestren una necesidad concreta.
+
+La compatibilidad PC ↔ Android es la primera prioridad. Los requisitos y criterios para comprobar estas funciones están en [experiencia de juego y compatibilidad](experiencia-y-compatibilidad.md) y en [ROADMAP.md](../ROADMAP.md). Son objetivos de desarrollo; no se presentan como funciones ya disponibles en alpha-0.1.
